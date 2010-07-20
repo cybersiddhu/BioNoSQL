@@ -1,0 +1,63 @@
+# db => blast (default database name)
+# collection => blast(first part of file name)
+# adaptor => mongodb
+my $file = 'blast.txt';
+my $db = BioDB::Blast->new;
+$db->load($file);
+
+my $searchio = Bio::SearchIO->new(-file => 'blast.txt',  -format => 'blast');
+while(my $result = $searchio->next_result) {
+	$db->create($result);
+	#or what would work most
+	$db->save($result);
+	$db->insert($result);
+}
+
+
+my $db = BioDB::Blast->new(database => 'mousedb');
+$db->adaptor('couchdb');
+$db->collection('mouse_tblastn');
+$db->file('tblastn.out');
+my $record = $db->load;
+
+my $db = BioDB::Blast->new(host => $otherhost);
+......
+
+# -- query 
+
+#Attrs: limit,  sort_by
+#default behaviour
+my $result = $db->find(%options)->$attr;
+#$result is Bio::Search::Result::ResultI
+$db->find_hits(%options);
+$db->find_hsps(%options);
+#$result will be Bio::Search::Hit::HitI/Bio::Search::HSP::HSPI
+
+# -- counting 
+$db->count(%options);
+$db->hit_count(%options);
+$db->hsp_count(%options);
+
+# -- options
+# query_name
+# query_id
+# query_length
+# hits
+
+# hit_length
+# hit_name
+# hit_id
+# significance
+# hsps
+
+# evalue
+# gaps
+# total_length
+# score
+# bits
+# percent_identity
+# query_start
+# query_end
+# hit_start
+# hit_end
+# rank
