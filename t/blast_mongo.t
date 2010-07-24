@@ -2,7 +2,6 @@ use strict;
 use Test::More qw/no_plan/;
 use MongoDB;
 use Try::Tiny;
-use FindBin qw/$Bin/;
 use File::Spec::Functions;
 use Module::Build;
 
