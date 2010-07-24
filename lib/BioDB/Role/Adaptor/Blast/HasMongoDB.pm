@@ -1,18 +1,20 @@
-package BioDB::Role::Adaptor::Blast::HasMongoDB;
+package BioDB::Role::Adaptor::Blast::HasMongodb;
 
 use strict;
 
 # Other modules:
 use Carp;
 use Moose::Role;
-use Bio::SearchIO;
+use MongoDB;
 use namespace::autoclean;
 
 # Module implementation
 #
 
+requires qw/host database collection refresh/;
+
 has 'connection' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => 'MongoDB::Connection',
     default => sub {
         my $self = shift;
@@ -28,7 +30,7 @@ has 'mongodb' => (
     default => sub {
         my $self = shift;
         my $db   = $self->database;
-        $self->connection->$db;
+        $self->connection->get_database($db);
     }
 );
 
@@ -39,25 +41,20 @@ has 'mongo_collection' => (
     default => sub {
         my $self       = shift;
         my $collection = $self->collection;
-        $self->database->$collection;
+        $self->mongodb->get_collection($collection);
     }
 );
 
-before 'load' => sub {
+before 'load_file' => sub {
 	my $self = shift;
 	$self->mongo_collection->drop if $self->refresh;
 };
 
-sub load {
-    my ( $self, $arg ) = @_;
-    my $file = $arg ? $arg : $self->file;
-    croak "Input file not given\n" if !$file;
+sub load_file {
+    my ( $self ) = @_;
+        my $collection = $self->mongo_collection;
 
-    my $searchio
-        = Bio::SearchIO->new( -format => $self->format, -file => $file );
-    my $collection = $self->mongo_collection;
-
-    while ( my $result = $searchio->next_result ) {
+    while ( my $result = $self->searchio->next_result ) {
         my $result_data;
         $result_data->{$_} = $result->$_
             for (
@@ -92,7 +89,7 @@ sub load {
         }
         $collection->insert($result_data);
     }
-
+    $collection->count;
 }
 
 1;    # Magic true value required at end of module
