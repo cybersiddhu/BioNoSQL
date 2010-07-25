@@ -9,12 +9,11 @@ use Bio::SearchIO;
 use Carp;
 use namespace::autoclean;
 
-
 has 'host' => (
-	is => 'rw', 
-	isa => 'Str', 
-	default => 'localhost', 
-	lazy => 1
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'localhost',
+    lazy    => 1
 );
 
 has 'database' => (
@@ -70,7 +69,7 @@ sub load {
     $self->searchio(
         Bio::SearchIO->new( -format => $self->format, -file => $file ) );
 
-    my $adaptor   = 'BioDB::Role::Adaptor::Blast::Has' . ucfirst $self->adaptor;
+    my $adaptor = 'BioDB::Role::Adaptor::Blast::Has' . ucfirst $self->adaptor;
     my $interface = 'BioDB::Role::Adaptor::Blast';
     if ( !$self->meta->does_role($adaptor) ) {
         apply_all_roles( $self, $adaptor );
@@ -78,7 +77,7 @@ sub load {
     if ( !$self->meta->does_role($interface) ) {
         apply_all_roles( $self, $interface );
     }
-    $self->load_file;
+    $self->load_blast;
 }
 
 1;

@@ -9,7 +9,7 @@ use namespace::autoclean;
 # Module implementation
 #
 
-requires qw/load load_file file/;
+requires qw/load load_blast file/;
 
 1;    # Magic true value required at end of module
 
