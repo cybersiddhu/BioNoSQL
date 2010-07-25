@@ -7,6 +7,7 @@ use Carp;
 use Moose::Role;
 use MongoDB;
 use MooseX::Params::Validate;
+use MooseX::Aliases;
 use namespace::autoclean;
 
 # Module implementation
@@ -35,7 +36,7 @@ has 'mongodb' => (
 );
 
 has 'mongo_collection' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => 'MongoDB::Collection',
     lazy    => 1,
     default => sub {
@@ -43,6 +44,12 @@ has 'mongo_collection' => (
         $self->mongodb->get_collection( $self->collection );
     }
 );
+
+after 'collection' => sub {
+	my ($self,  $name) = @_;
+	return if !$name;
+	$self->mongo_collection($self->mongodb->$name);
+};
 
 before 'load_blast' => sub {
     my $self = shift;
@@ -97,6 +104,8 @@ sub load_blast {
     }
     $self->mongo_collection->count;
 }
+
+alias save => 'insert';
 
 1;    # Magic true value required at end of module
 

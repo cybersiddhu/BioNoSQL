@@ -7,6 +7,7 @@ use MongoDB;
 use Moose::Util qw/apply_all_roles/;
 use Bio::SearchIO;
 use Carp;
+use MooseX::Aliases;
 use namespace::autoclean;
 
 has 'host' => (
@@ -33,6 +34,7 @@ has 'adaptor' => (
 has 'collection' => (
     is      => 'rw',
     isa     => 'Str',
+    alias   => 'namespace',
     default => 'blast',
     lazy    => 1
 );
