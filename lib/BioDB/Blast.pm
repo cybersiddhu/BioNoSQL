@@ -79,7 +79,7 @@ sub load {
     if ( !$self->meta->does_role($interface) ) {
         apply_all_roles( $self, $interface );
     }
-    $self->load_blast;
+    return $self->load_blast;
 }
 
 1;

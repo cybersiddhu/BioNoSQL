@@ -13,7 +13,7 @@ SKIP: {
         $conn = MongoDB::Connection->new( host => $host );
     }
     catch {
-        skip "mongodb connection cannot be done: $_";
+        skip "mongodb server instance is not running: $_";
     };
 
     use_ok('BioDB::Blast');
