@@ -5,6 +5,7 @@ use Try::Tiny;
 use File::Spec::Functions;
 use Module::Build;
 use Bio::SearchIO;
+use Data::Dumper;
 
 SKIP: {
     my $host = $ENV{MONGOD} || 'localhost';
@@ -17,7 +18,7 @@ SKIP: {
     };
 
     use_ok('BioDB::Blast');
-    my $biodb = BioDB::Blast->new( host => $host );
+    my $biodb = BioDB::Blast->new( host => $host, refresh => 1 );
     isa_ok( $biodb, 'BioDB::Blast' );
 
     $biodb->database('test_biodb');
@@ -30,7 +31,12 @@ SKIP: {
     my $record = $biodb->load;
     is( $record, 4, 'it has loaded blast records' );
 
-    $biodb->namespace('test_blast2');
+    my $report = $biodb->fetch_report('CATH_RAT');
+    isa_ok( $report, 'Bio::Search::Result::GenericResult' );
+    is( $report->query_name, 'CATH_RAT',  'got the correct query name' );
+    is($report->num_hits, 17,  'it has got 5 hits' );
+
+    $biodb->collection('test_blast2');
     my $searchio = Bio::SearchIO->new(
         -file   => catfile( $data_dir, 'a_thaliana.blastn' ),
         -format => 'blast'

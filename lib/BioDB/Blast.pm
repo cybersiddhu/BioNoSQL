@@ -73,14 +73,19 @@ sub load {
 
     my $adaptor = 'BioDB::Role::Adaptor::Blast::Has' . ucfirst $self->adaptor;
     my $interface = 'BioDB::Role::Adaptor::Blast';
+
+    $self->meta->make_mutable;
     if ( !$self->meta->does_role($adaptor) ) {
         apply_all_roles( $self, $adaptor );
     }
     if ( !$self->meta->does_role($interface) ) {
         apply_all_roles( $self, $interface );
     }
+    $self->meta->make_immutable;
     return $self->load_blast;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 
